@@ -20,7 +20,7 @@ app.use("/customer/auth/*", function auth(req,res,next){
       req.user = user
       next()
     })
-  }
+  } else return res.status(404).json({ message: "User not logged in" })
 });
  
 const PORT =5000;

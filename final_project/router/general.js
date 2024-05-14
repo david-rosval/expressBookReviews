@@ -32,15 +32,20 @@ public_users.get('/author/:author',function (req, res) {
   const booksArray = Object.entries(books)
   const filteredBooks = booksArray.filter(([key, value]) => value.author === authorDecoded)
   // send the book
-  if (filteredBooks.length === 0) return res.status(404).json({ message: "Book not found" })
+  if (filteredBooks.length === 0) return res.status(404).json({ message: "Books not found" })
   const filteredBooksObject = Object.fromEntries(filteredBooks)
   res.send(JSON.stringify(filteredBooksObject, null, 4))
 });
 
 // Get all books based on title
 public_users.get('/title/:title',function (req, res) {
-  //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
+  const titleParam = req.params.title
+  const titleDecoded = decodeURIComponent(titleParam).trim()
+  const booksArray = Object.entries(books)
+  const filteredBooks = booksArray.filter(([key, value]) => value.title === titleDecoded)
+  if (filteredBooks.length === 0) return res.status(404).json({ message: "Books not found" })
+  const filteredBooksObject = Object.fromEntries(filteredBooks)
+  res.send(JSON.stringify(filteredBooksObject, null, 4))
 });
 
 //  Get book review

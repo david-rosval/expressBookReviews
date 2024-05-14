@@ -18,7 +18,17 @@ public_users.post("/register", (req,res) => {
 
 // Get the book list available in the shop
 public_users.get('/',function (req, res) {
-  res.send(JSON.stringify(books, null, 4))
+  const gettingAllBooksPromise = new Promise((resolve, reject) => {
+    try {
+      resolve(books)
+    } catch (error) {
+      reject(error)
+    }
+  })
+  gettingAllBooksPromise.then(
+    booksObtained => res.send(JSON.stringify(booksObtained, null, 4)),
+    error => res.status(500).json({ message: "Unable to retrieve data from the database" })
+  )
 });
 
 // Get book details based on ISBN

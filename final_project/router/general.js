@@ -19,14 +19,22 @@ public_users.get('/',function (req, res) {
 public_users.get('/isbn/:isbn',function (req, res) {
   const isbnParam = req.params.isbn
   const book = books[isbnParam]
-  if (!book) return res.status(401).json({ message: "Invalid ISBN. Book not found" })
+  if (!book) return res.status(404).json({ message: "Book not found" })
   res.send(JSON.stringify(book, null, 4))
  });
   
 // Get book details based on author
 public_users.get('/author/:author',function (req, res) {
-  //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
+  // validate the author param (spaces with %20)
+  const authorParam = req.params.author
+  const authorDecoded = decodeURIComponent(authorParam).trim()
+  // find the books with the author
+  const booksArray = Object.entries(books)
+  const filteredBooks = booksArray.filter(([key, value]) => value.author === authorDecoded)
+  // send the book
+  if (filteredBooks.length === 0) return res.status(404).json({ message: "Book not found" })
+  const filteredBooksObject = Object.fromEntries(filteredBooks)
+  res.send(JSON.stringify(filteredBooksObject, null, 4))
 });
 
 // Get all books based on title

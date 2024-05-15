@@ -74,11 +74,22 @@ public_users.get('/author/:author',function (req, res) {
 public_users.get('/title/:title',function (req, res) {
   const titleParam = req.params.title
   const titleDecoded = decodeURIComponent(titleParam).trim()
-  const booksArray = Object.entries(books)
-  const filteredBooks = booksArray.filter(([key, value]) => value.title === titleDecoded)
-  if (filteredBooks.length === 0) return res.status(404).json({ message: "Books not found" })
-  const filteredBooksObject = Object.fromEntries(filteredBooks)
-  res.send(JSON.stringify(filteredBooksObject, null, 4))
+  const getBooksByTitlePromise = new Promise((resolve, reject) => {
+    try {
+      const filteredBooks = Object.entries(books)
+        .filter(([key, value]) => value.title === titleDecoded)
+      if (filteredBooks.length === 0) {
+        throw new Error(`No books with title ${titleDecoded}`)
+      }
+      resolve(Object.fromEntries(filteredBooks))
+    } catch (error) {
+      reject(error.message)
+    }
+  })
+  getBooksByTitlePromise.then(
+    booksObtained => res.send(JSON.stringify(booksObtained, null, 4)),
+    error => res.status(404).json({ message: error })
+  )
 });
 
 //  Get book review
